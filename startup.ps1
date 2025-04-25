@@ -45,3 +45,34 @@ if ($AutopilotOption -eq 'Publish') {
   Import-CSV "$Destination\Autopilot\AutopilotInfo.csv" | Format-List
   Remove-Item "$Destination\Autopilot\AutopilotInfo.csv"
 }
+
+$OSVersion = 'Windows 11'
+
+$OSEdition = Read-Host -Prompt "Pro, Home, Education"
+
+$OSLanguage = Read-Host -Prompt "nl-nl, en-us, fr-fr, de-de"
+
+$OSBuild = Read-Host "Use latest build? (Y/n)
+if ($OSBuild -eq 'y') {
+  $ReleaseId = Get-OSDCatalogOperationgSystems | Where-Object { ($_.OperatingSystem -eq $OSVersion) -and ($_.License -eq $OSActivation) -and ($_.LanguageCode -eq $OSLanguage) } | Select-Object -Property ReleaseId -Unique
+  # TO DO: Get latest ReleaseId more intelligently (Split on H, highest first, highest last)
+  $OSBuild = $ReleaseId[0]
+}
+
+$WindowsUpdate = Read-Host "Run Windows Update before OOBE? (Y/n)"
+if ($WindowsUpdate -eq 'y') {
+  $WindowsUpdate = $true
+} else {
+  $WindowsUpdate = $false
+
+$Global:MyOSDCloud = [ordered]@{
+  OEMActivation = [bool]$true
+  ClearDiskConfirm = [bool]$true # Indien meerdere drives, anders geen keuze
+  Restart = [bool]$true
+  RecoveryPartition = [bool]$true
+  WindowsUpdate = [bool]$WindowsUpdate
+  WindowsUpdateDrivers = [bool]$WindowsUpdate
+  SyncMSUpCatDriverUSB = [bool]$true
+}
+
+Start-OSDCloud -OSVersion $OSVersion -OSEdition $OSEdition -OSLanguage $OSLanguage -OSBuild $OSBuild -Firmware -SkipAutopilot -SkipODT
