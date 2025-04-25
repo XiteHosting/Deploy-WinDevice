@@ -14,6 +14,7 @@ if (Test-Path "$DownloadOutput") { Remove-Item "$DownloadOutput" }
 if (Test-Path "$ArchiveOutput\$BranchName") { Remove-Item "$ArchiveOutput\$BranchName" -Recurse }
 if (Test-Path "$Destination") { Remove-Item "$Destination" -Recurse }
 
+Write-Host "`n### Download latest script version"
 #Import-Module BitsTransfer
 #Start-BitsTransfer -Source $url -Destination $DownloadOutput
 Invoke-WebRequest -Uri $url -OutFile $DownloadOutput
@@ -24,19 +25,20 @@ Move-Item "$ArchiveOutput\$BranchName" $Destination
 . "$Destination\Functions\Select-Option.ps1"
 . "$Destination\Functions\Ask-Confirmation.ps1"
 
-Write-Host "Autopilot"
+Write-Host "`n###You may remove USB Stick if you don't need a local install image"
 
+Write-Host "`n### Choose Autopilot action"
 $AutopilotOptions = @(
   [PSCustomObject]@{Return = "Publish"; Action = "Publish Autopilot Info to Tenant"}
   [PSCustomObject]@{Return = "LocalCSV"; Action = "Create AutopilotInfo.csv on USB stick"}
   [PSCustomObject]@{Return = "Display"; Action = "Display Autopilot Info"}
   [PSCustomObject]@{Return = "Skip"; Action = "Skip"}
 )
-
 $AutopilotOption = Select-Option -list $AutopilotOptions -returnField Return -showFields Action -extraOption Default -defaultValue "Publish"
 
 if ($AutopilotOption -eq 'Publish') {
-  Write-Host "Do publish later"
+  # TODO: Open 7z file
+  Write-Host "### Run publish later so all user actions are together"
 } elseif ($AutopilotOption -eq 'LocalCSV') {
   # TODO: Change to drive selection
   $Drive = "$((Get-Volume -FileSystemlabel "OSDCloudUSB").DriveLetter):"
@@ -58,7 +60,7 @@ if ($AutopilotOption -eq 'Publish') {
 $OSVersion = 'Windows 11'
 $OSActivation = 'Retail'
 
-Write-Host "Choose Edition to install"
+Write-Host "`n### Choose Edition to install"
 $OSEditions = @(
   [PSCustomObject]@{Edition = "Pro"}
   [PSCustomObject]@{Edition = "Education"}
@@ -68,7 +70,7 @@ if ($AutopilotOption -eq 'skip') {
 }
 $OSEdition = Select-Option -list $OSEditions -returnField Edition -extraOption Default -defaultValue "Pro"
 
-Write-Host "Choose language to install"
+Write-Host "`n### Choose language to install"
 $OSLanguages = @(
   [PSCustomObject]@{LangCode = "nl-nl"; Language = "Dutch"}
   [PSCustomObject]@{LangCode = "en-us"; Language = "English (United States)"}
@@ -77,7 +79,7 @@ $OSLanguages = @(
 )
 $OSLanguage = Select-Option -list $OSLanguages -returnField LangCode -extraOption Default -defaultValue "nl-nl"
 
-Write-Host "Choose release to install"
+Write-Host "`n### Choose release to install"
 $ReleaseIds = Get-OSDCatalogOperatingSystems | Where-Object { ($_.OperatingSystem -eq $OSVersion) -and ($_.License -eq $OSActivation) -and ($_.LanguageCode -eq $OSLanguage) } | Select-Object -Property ReleaseId -Unique
 $ReleaseIds += [PSCustomObject]@{ReleaseId = 'Latest'}
 $ReleaseId = Select-Option -list $ReleaseIds -returnField ReleaseId -extraOption Default -defaultValue 'Latest'
@@ -89,7 +91,7 @@ if ($ReleaseId -eq 'Latest') {
   $OSBuild = $ReleaseId
 }
 
-Write-Host "Install Windows Updates right before OOBE?"
+Write-Host "`n### Install Windows Updates right before OOBE?"
 $WindowsUpdate = @(
   [PSCustomObject]@{Return = 'y'; Answer = 'Yes'}
   [PSCustomObject]@{Return = 'n'; Answer = 'No'}
@@ -102,8 +104,8 @@ if ($WindowsUpdate -eq 'y') {
   $WindowsUpdate = $false
 }
 
-Write-Host "Manually confirm Clear-Disk for each drive?"
-Write-Warning "Choose Yes if you have multiple drives (default is NO) !"
+Write-Host "`n### Manually confirm Clear-Disk for each drive?"
+Write-Warning "### Choose Yes if you have multiple drives (default is NO) !"
 $ClearDiskConfirm = @(
   [PSCustomObject]@{Return = 'y'; Answer = 'Yes'}
   [PSCustomObject]@{Return = 'n'; Answer = 'No'}
@@ -116,6 +118,8 @@ if ($ClearDiskConfirm -eq 'y') {
   $ClearDiskConfirm = $false
 }
 
+Write-Host "´n"
+Write-Host "#################################"
 Write-Host "Summary"
 Write-Host "Autopilot: $AutopilotOption"
 Write-Host "OSVersion: $OSVersion"
@@ -126,6 +130,8 @@ Write-Host "OSReleaseId: $ReleaseId"
 Write-Host "OSBuild: $OSBuild"
 Write-Host "WindowsUpdate: $WindowsUpdate"
 Write-Host "ClearDiskConfirm: $ClearDiskConfirm"
+Write-Host "#################################"
+Write-Host "`n"
 
 $Continue = Ask-Confirmation -Message "Correct" -HideCancel
 
