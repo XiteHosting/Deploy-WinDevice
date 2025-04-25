@@ -1,7 +1,7 @@
 if ($psISE) {
     $ScriptRoot = Split-Path -Path $psISE.CurrentFile.FullPath
 } else {
-    $ScriptRoot = $PSScriptRoot
+    $ScriptRoot = $PSScriptRoot
 }
 
 $ShortName = Read-Host "Client Short name"
@@ -11,7 +11,7 @@ $TenantInfoFiles += Get-ChildItem "X:\OSDCloud\Config\Scripts\Autopilot\TenantIn
 #$TenantInfoFiles += Get-ChildItem "$((Get-Volume | Where-Object { $_.FileSystemLabel -eq 'OSDCloudUSB' }).DriveLetter):\
 
 if ($TenantInfoFiles.Name -contains ("TenantInfo_$($Shortname).7z")) {
-    $TenantInfoFile = $TenantInfoFiles | Where-Object { $_.Name -eq "TenantInfo_$($Shortname).7z")
+    $TenantInfoFile = $TenantInfoFiles | Where-Object { $_.Name -eq "TenantInfo_$($Shortname).7z" }
 }
 
 if (Test-Path "$($TenantInfoFile).FullName") {
