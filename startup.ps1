@@ -10,9 +10,9 @@ $BranchName = "Deploy-WinDevice-main"
 $ArchiveOutput = "$($env:TEMP)"
 $Destination = "$($env:TEMP)\Deploy-WinDevice"
 
-Remove-Item "$DownloadOutput"
-Remove-Item "$ArchiveOutput\$BranchName" -Recurse
-Remove-Item "$Destination" -Recurse
+if (Test-Path "$DownloadOutput") { Remove-Item "$DownloadOutput" }
+if (Test-Path "$ArchiveOutput\$BranchName") { Remove-Item "$ArchiveOutput\$BranchName" -Recurse }
+if (Test-Path "$ArchiveOutput\$BranchName") { Remove-Item "$Destination" -Recurse }
 
 #Import-Module BitsTransfer
 #Start-BitsTransfer -Source $url -Destination $DownloadOutput
@@ -30,5 +30,5 @@ $AutopilotOption = 'Publish'
 # Local CSV: To Do
 
 if ($AutopilotOption -eq 'Publish') {
-  "$ArchiveOutput\Autopilot\Publish-Autopilotinfo.ps1"
+  & "$ArchiveOutput\Autopilot\Publish-Autopilotinfo.ps1"
 }
