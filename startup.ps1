@@ -12,7 +12,7 @@ $Destination = "$($env:TEMP)\Deploy-WinDevice"
 
 if (Test-Path "$DownloadOutput") { Remove-Item "$DownloadOutput" }
 if (Test-Path "$ArchiveOutput\$BranchName") { Remove-Item "$ArchiveOutput\$BranchName" -Recurse }
-if (Test-Path "$ArchiveOutput\$BranchName") { Remove-Item "$Destination" -Recurse }
+if (Test-Path "$Destination") { Remove-Item "$Destination" -Recurse }
 
 #Import-Module BitsTransfer
 #Start-BitsTransfer -Source $url -Destination $DownloadOutput
