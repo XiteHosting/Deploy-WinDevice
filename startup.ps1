@@ -122,12 +122,12 @@ Write-Host "OSVersion: $OSVersion"
 Write-Host "OSActivation: $OSActivation"
 Write-Host "OSEdition: $OSEdition"
 Write-Host "OSLanguage: $OSLanguage"
-Write-Host "OSReleaseId: $OSReleaseId"
+Write-Host "OSReleaseId: $ReleaseId"
 Write-Host "OSBuild: $OSBuild"
 Write-Host "WindowsUpdate: $WindowsUpdate"
 Write-Host "ClearDiskConfirm: $ClearDiskConfirm"
 
-$Continue = Ask-Confirmation -Message "Correct?"
+$Continue = Ask-Confirmation -Message "Correct" -HideCancel
 
 if ($Continue -eq 'y') {
   if ($AutopilotOption -eq 'Publish') {
