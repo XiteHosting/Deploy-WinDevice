@@ -60,6 +60,8 @@ if ($OSBuild -eq 'y') {
   $ReleaseId = Get-OSDCatalogOperatingSystems | Where-Object { ($_.OperatingSystem -eq $OSVersion) -and ($_.License -eq $OSActivation) -and ($_.LanguageCode -eq $OSLanguage) } | Select-Object -Property ReleaseId -Unique
   # TO DO: Get latest ReleaseId more intelligently (Split on H, highest first, highest last)
   $OSBuild = $ReleaseId[0].ReleaseId
+} else { 
+  # TODO: Choose build
 }
 
 $WindowsUpdate = Read-Host -Prompt "Run Windows Update before OOBE? (Y/n)"
@@ -75,6 +77,8 @@ if ($ClearDiskConfirm -eq 'y') {
 } else {
   $ClearDiskConfirm = $false
 }
+
+# TODO: Clear disk manually?
 
 if ($AutopilotOption -eq 'Publish') {
   & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
