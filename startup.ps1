@@ -19,7 +19,7 @@ if (Test-Path "$Destination") { Remove-Item "$Destination" -Recurse }
 Invoke-WebRequest -Uri $url -OutFile $DownloadOutput
 Expand-Archive -Path $DownloadOutput -DestinationPath $ArchiveOutput -Force
 Remove-Item $DownloadOutput
-Move-Item "$ArchiveOutput\$BranchName\*" $Destination
+Move-Item "$ArchiveOutput\$BranchName" $Destination
 Remove-Item "$ArchiveOutput\$BranchName" -Force
 
 Write-Host "Autopilot"
