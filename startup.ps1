@@ -103,7 +103,7 @@ if ($WindowsUpdate -eq 'y') {
 }
 
 Write-Host "Manually confirm Clear-Disk for each drive?"
-Write-Warning "Choose Y if you have multiple drives !"
+Write-Warning "Choose Yes if you have multiple drives (default is NO) !"
 $ClearDiskConfirm = @(
   [PSCustomObject]@{Return = 'y'; Answer = 'Yes'}
   [PSCustomObject]@{Return = 'n'; Answer = 'No'}
