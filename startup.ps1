@@ -94,7 +94,7 @@ $WindowsUpdate = @(
   [PSCustomObject]@{Return = 'y'; Answer = 'Yes'}
   [PSCustomObject]@{Return = 'n'; Answer = 'No'}
 )
-$WindowsUpdate = Select-Option -list $WindowsUpdate -returnField Return -extraOption Default -defaultValue 'y'
+$WindowsUpdate = Select-Option -list $WindowsUpdate -returnField Return -showFields Answer -extraOption Default -defaultValue 'y'
 
 if ($WindowsUpdate -eq 'y') {
   $WindowsUpdate = $true
@@ -108,7 +108,7 @@ $ClearDiskConfirm = @(
   [PSCustomObject]@{Return = 'y'; Answer = 'Yes'}
   [PSCustomObject]@{Return = 'n'; Answer = 'No'}
 )
-$ClearDiskConfirm = Select-Option -list $ClearDiskConfirm -returnField Return -extraOption Default -defaultValue 'n'
+$ClearDiskConfirm = Select-Option -list $ClearDiskConfirm -returnField Return -showFields Answer -extraOption Default -defaultValue 'n'
 
 if ($ClearDiskConfirm -eq 'y') {
   $ClearDiskConfirm = $true
