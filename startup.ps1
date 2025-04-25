@@ -75,7 +75,7 @@ $OSLanguages = @(
   [PSCustomObject]@{LangCode = "fr-fr"; Language = "French"}
   [PSCustomObject]@{LangCode = "de-de"; Language = "German"}
 )
-$OSLanguage = Select-Option -list $OSLanguages -returnField LangCode -extraOption Default -defaultValue "en-us"
+$OSLanguage = Select-Option -list $OSLanguages -returnField LangCode -extraOption Default -defaultValue "nl-nl"
 
 Write-Host "Choose release to install"
 $ReleaseIds = Get-OSDCatalogOperatingSystems | Where-Object { ($_.OperatingSystem -eq $OSVersion) -and ($_.License -eq $OSActivation) -and ($_.LanguageCode -eq $OSLanguage) } | Select-Object -Property ReleaseId -Unique
