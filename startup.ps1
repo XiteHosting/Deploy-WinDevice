@@ -20,7 +20,6 @@ Invoke-WebRequest -Uri $url -OutFile $DownloadOutput
 Expand-Archive -Path $DownloadOutput -DestinationPath $ArchiveOutput -Force
 Remove-Item $DownloadOutput
 Move-Item "$ArchiveOutput\$BranchName" $Destination
-Remove-Item "$ArchiveOutput\$BranchName" -Force
 
 Write-Host "Autopilot"
 $AutopilotOption = Read-Host -Prompt "Publish Hash, Local CSV, Display, Skip"
