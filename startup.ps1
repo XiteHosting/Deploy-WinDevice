@@ -129,7 +129,7 @@ Write-Host "ClearDiskConfirm: $ClearDiskConfirm"
 
 $Continue = Ask-Confirmation -Message "Correct?"
 
-if ($Continue 'y') {
+if ($Continue -eq 'y') {
   if ($AutopilotOption -eq 'Publish') {
     & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
     & "$Destination\Autopilot\Publish-Autopilot.ps1"
