@@ -25,7 +25,7 @@ Move-Item "$ArchiveOutput\$BranchName" $Destination
 . "$Destination\Functions\Select-Option.ps1"
 . "$Destination\Functions\Ask-Confirmation.ps1"
 
-Write-Host "`n###You may remove USB Stick if you don't need a local install image"
+Write-Host "`n### You may remove USB Stick if you don't need the locally stored images"
 
 Write-Host "`n### Choose Autopilot action"
 $AutopilotOptions = @(
