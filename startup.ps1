@@ -31,7 +31,7 @@ $AutopilotOption = 'Publish'
 
 if ($AutopilotOption -eq 'LocalCSV') {
   & "$ArchiveOutput\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
-if ($AutopilotOption -eq 'Publish') {
+} elseif ($AutopilotOption -eq 'Publish') {
   & "$ArchiveOutput\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
   & "$ArchiveOutput\Autopilot\Publish-Autopilotinfo.ps1"
 }
