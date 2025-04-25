@@ -29,8 +29,14 @@ if ($AutopilotOption -eq 'Publish') {
   & "$Destination\Autopilot\Publish-Autopilot.ps1"
   Remove-Item "$Destination\Autopilot\AutopilotInfo.csv"
 } elseif ($AutopilotOption -eq 'LocalCSV') {
+  # TODO: Change to drive selection
+  $Drive = "$((Get-Volume -FileSystemlabel "OSDCloudUSB").DriveLetter):"
   & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
-  # Append to destination
+  if (Test-Path "$($Drive)\AutopilotInfo.csv") {
+    Import-CSV "$Destination\Autopilot\AutopilotInfo.csv" | Export-CSV "$($Drive)\AutopilotInfo.csv" -Append
+  } else {
+    Copy-Item "$Destination\Autopilot\AutopilotInfo.csv" "$($Drive)\AutopilotInfo.csv"
+  }
   Remove-Item "$Destination\Autopilot\AutopilotInfo.csv"
 } elseif ($AutopilotOption -eq 'Display') {
   & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
