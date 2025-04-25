@@ -21,8 +21,19 @@ Expand-Archive -Path $DownloadOutput -DestinationPath $ArchiveOutput -Force
 Remove-Item $DownloadOutput
 Move-Item "$ArchiveOutput\$BranchName" $Destination
 
+. "$Destination\Functions\Select-Option.ps1"
+. "$Destination\Functions\Ask-Confirmation.ps1"
+
 Write-Host "Autopilot"
-$AutopilotOption = Read-Host -Prompt "Publish, LocalCSV, Display, Skip"
+
+$AutopilotOptions = @(
+  [PSCustomObject]@{Return = "Publish"; Action = "Publish Autopilot Info to Tenant"}
+  [PSCustomObject]@{Return = "LocalCSV"; Action = "Create AutopilotInfo.csv on USB stick"}
+  [PSCustomObject]@{Return = "Display"; Action = "Display Autopilot Info"}
+  [PSCustomObject]@{Return = "Skip"; Action = "Skip"}
+)
+
+$AutopilotOption = Select-Option -list $AutopilotOptions -returnField Return -showFields Action -extraOption Default -defaultValue "Publish"
 
 if ($AutopilotOption -eq 'Publish') {
   Write-Host "Do publish later"
@@ -47,39 +58,63 @@ if ($AutopilotOption -eq 'Publish') {
 $OSVersion = 'Windows 11'
 $OSActivation = 'Retail'
 
-if ($AutopilotOption -ne 'Skip') {
-  $OSEdition = Read-Host -Prompt "Pro, Education"
-} else {
-  $OSEdition = Read-Host -Prompt "Pro, Home, Education"
+Write-Host "Choose Edition to install"
+$OSEditions = @(
+  [PSCustomObject]@{Edition = "Pro"}
+  [PSCustomObject]@{Edition = "Education"}
+)
+if ($AutopilotOption -eq 'skip') {
+  $OSEditions += [PSCustomObject]@{Edition = "Home"}
 }
+$OSEdition = Select-Option -list $OSEditions -returnField Edition -extraOption Default -defaultValue "Pro"
 
-$OSLanguage = Read-Host -Prompt "nl-nl, en-us, fr-fr, de-de"
+Write-Host "Choose language to install"
+$OSLanguages = @(
+  [PSCustomObject]@{LangCode = "nl-nl"; Language = "Dutch"}
+  [PSCustomObject]@{LangCode = "en-us"; Language = "English (United States)"}
+  [PSCustomObject]@{LangCode = "fr-fr"; Language = "French"}
+  [PSCustomObject]@{LangCode = "de-de"; Language = "German"}
+)
+$OSLanguage = Select-Option -list $OSLanguages -returnField LangCode -extraOption Default -defaultValue "en-us"
 
-$OSBuild = Read-Host -Prompt "Use latest build? (Y/n)"
-if ($OSBuild -eq 'y') {
-  $ReleaseId = Get-OSDCatalogOperatingSystems | Where-Object { ($_.OperatingSystem -eq $OSVersion) -and ($_.License -eq $OSActivation) -and ($_.LanguageCode -eq $OSLanguage) } | Select-Object -Property ReleaseId -Unique
+Write-Host "Choose release to install"
+$ReleaseIds = Get-OSDCatalogOperatingSystems | Where-Object { ($_.OperatingSystem -eq $OSVersion) -and ($_.License -eq $OSActivation) -and ($_.LanguageCode -eq $OSLanguage) } | Select-Object -Property ReleaseId -Unique
+$ReleaseIds += [PSCustomObject]@{ReleaseId = 'Latest'}
+$ReleaseId = Select-Option -list $ReleaseIds -returnField ReleaseId -extraOption Default -defaultValue 'Latest'
+
+if ($ReleaseId -eq 'Latest') {
   # TO DO: Get latest ReleaseId more intelligently (Split on H, highest first, highest last)
-  $OSBuild = $ReleaseId[0].ReleaseId
-} else { 
-  # TODO: Choose build
+  $OSBuild = $ReleaseIds[0].ReleaseId
+} else {
+  $OSBuild = $ReleaseId
 }
 
-$WindowsUpdate = Read-Host -Prompt "Run Windows Update before OOBE? (Y/n)"
+Write-Host "Install Windows Updates right before OOBE?"
+$WindowsUpdate = @(
+  [PSCustomObject]@{Return = 'y'; Answer = 'Yes'}
+  [PSCustomObject]@{Return = 'n'; Answer = 'No'}
+)
+$WindowsUpdate = Select-Option -list $WindowsUpdate -returnField Return -extraOption Default -defaultValue 'y'
+
 if ($WindowsUpdate -eq 'y') {
   $WindowsUpdate = $true
 } else {
   $WindowsUpdate = $false
 }
 
-$ClearDiskConfirm = Read-Host -Prompt "Manually confirm ClearDisk? Necessary if you have multiple drives ! (Y/n)"
+Write-Host "Manually confirm Clear-Disk for each drive?"
+Write-Warning "Choose Y if you have multiple drives !"
+$ClearDiskConfirm = @(
+  [PSCustomObject]@{Return = 'y'; Answer = 'Yes'}
+  [PSCustomObject]@{Return = 'n'; Answer = 'No'}
+)
+$ClearDiskConfirm = Select-Option -list $ClearDiskConfirm -returnField Return -extraOption Default -defaultValue 'n'
+
 if ($ClearDiskConfirm -eq 'y') {
   $ClearDiskConfirm = $true
 } else {
   $ClearDiskConfirm = $false
 }
-
-# TODO: Clear disk manually?
-Get-Partition.fixed
 
 if ($AutopilotOption -eq 'Publish') {
   & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
