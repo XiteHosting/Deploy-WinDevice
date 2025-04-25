@@ -60,10 +60,17 @@ Function Select-Option {
             } until ( ($options.$indexField -contains $optionIndex) -or ($optionIndex -eq '0') )
         } elseif ( ($extraOption -eq "default") -and ("" -ne $defaultValue) ) {
             $defaultValueString = ($options | Where-Object { $_.$returnField -eq $defaultValue }).$returnField
-            do {
-                $optionIndex = Read-Host "Choose $indexField (0 for $defaultValueString)"
-            } until ( ($options.$indexField -contains $optionIndex) -or ($optionIndex -eq '0') )	
-        } else {
+
+            if ( ($null -ne $defaultValueString) -and ('' -ne $defaultValueString) ) {
+                do {
+                    $optionIndex = Read-Host "Choose $indexField (0 for $defaultValueString)"
+                } until ( ($options.$indexField -contains $optionIndex) -or ($optionIndex -eq '0') )
+            } else {
+                $extraOption = 'none'
+            }
+        }
+
+        if ('none' -eq $extraOption) {
             do {
                 $optionIndex = Read-Host "Choose $indexField"
             } until ($options.$indexField -contains $optionIndex)
