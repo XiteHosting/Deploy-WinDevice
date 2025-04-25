@@ -12,7 +12,7 @@ $ArchiveOutput = "$($env:TEMP)\Deploy-WinDevice"
 #Import-Module BitsTransfer
 #Start-BitsTransfer -Source $url -Destination $DownloadOutput
 Invoke-WebRequest -Uri $url -OutFile $DownloadOutput
-Expand-Archive -Path $DownloadOutput -DestinationPath $ArchiveOutput
+Expand-Archive -Path $DownloadOutput -DestinationPath $ArchiveOutput -Force
 Remove-Item $DownloadOutput
 Move-Item "$ArchiveOutput\Deploy-WinDevice-main\*" $ArchiveOutput
 Remove-Item "$ArchiveOutput\Deploy-WinDevice-main"
