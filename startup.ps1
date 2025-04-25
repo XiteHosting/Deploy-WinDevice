@@ -116,20 +116,37 @@ if ($ClearDiskConfirm -eq 'y') {
   $ClearDiskConfirm = $false
 }
 
-if ($AutopilotOption -eq 'Publish') {
-  & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
-  & "$Destination\Autopilot\Publish-Autopilot.ps1"
-  Remove-Item "$Destination\Autopilot\AutopilotInfo.csv"
-}
+Write-Host "Summary"
+Write-Host "Autopilot: $AutopilotOption"
+Write-Host "OSVersion: $OSVersion"
+Write-Host "OSActivation: $OSActivation"
+Write-Host "OSEdition: $OSEdition"
+Write-Host "OSLanguage: $OSLanguage"
+Write-Host "OSReleaseId: $OSReleaseId"
+Write-Host "OSBuild: $OSBuild"
+Write-Host "WindowsUpdate: $WindowsUpdate"
+Write-Host "ClearDiskConfirm: $ClearDiskConfirm"
 
-$Global:MyOSDCloud = [ordered]@{
-  OEMActivation = [bool]$true
-  ClearDiskConfirm = [bool]$ClearDiskConfirm
-  Restart = [bool]$true
-  RecoveryPartition = [bool]$true
-  WindowsUpdate = [bool]$WindowsUpdate
-  WindowsUpdateDrivers = [bool]$WindowsUpdate
-  SyncMSUpCatDriverUSB = [bool]$true
-}
+$Continue = Ask-Confirmation -Message "Correct?"
 
-Start-OSDCloud -OSVersion $OSVersion -OSEdition $OSEdition -OSLanguage $OSLanguage -OSBuild $OSBuild -OSActivation $OSActivation -Firmware -SkipAutopilot -SkipODT
+if ($Continue 'y') {
+  if ($AutopilotOption -eq 'Publish') {
+    & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
+    & "$Destination\Autopilot\Publish-Autopilot.ps1"
+    Remove-Item "$Destination\Autopilot\AutopilotInfo.csv"
+  }
+  
+  $Global:MyOSDCloud = [ordered]@{
+    OEMActivation = [bool]$true
+    ClearDiskConfirm = [bool]$ClearDiskConfirm
+    Restart = [bool]$true
+    RecoveryPartition = [bool]$true
+    WindowsUpdate = [bool]$WindowsUpdate
+    WindowsUpdateDrivers = [bool]$WindowsUpdate
+    SyncMSUpCatDriverUSB = [bool]$true
+  }
+  
+  Start-OSDCloud -OSVersion $OSVersion -OSEdition $OSEdition -OSLanguage $OSLanguage -OSBuild $OSBuild -OSActivation $OSActivation -Firmware -SkipAutopilot -SkipODT
+} else {
+  Write-Warning "Too bad, please reboot or relaunch script manually"
+}
