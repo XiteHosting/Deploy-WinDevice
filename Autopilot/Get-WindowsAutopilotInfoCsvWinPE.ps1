@@ -1,31 +1,28 @@
 if ($psISE) {
-    Write-Host "ISE Running"
-    $ScriptRoot = Split-Path -Path $psISE.CurrentFile.FullPath        
+Â  Â  $ScriptRoot = Split-Path -Path $psISE.CurrentFile.FullPathÂ  Â  Â  Â  
 } else {
-    Write-Host "ISE Not Running"
-    $ScriptRoot = $PSScriptRoot
+Â  Â  $ScriptRoot = $PSScriptRoot
 }
 
 $serial = (Get-WmiObject -Class Win32_BIOS).SerialNumber
 
 #Register PCPKsp
-Copy-Item "$ScriptRoot\PCPKsp.dll" "X:\Windows\System32\PCPKsp.dll"
+Copy-Item "$ScriptRoot\oa3\PCPKsp.dll" "X:\Windows\System32\PCPKsp.dll"
 rundll32 X:\Windows\System32\PCPKsp.dll,DllInstall
 
 #Run OA3Tool
-Start-Process "$ScriptRoot\oa3tool.exe" -WorkingDirectory $ScriptRoot -ArgumentList "/Report /ConfigFile=""$ScriptRoot\OA3.cfg"" /NoKeyCheck" -Wait
+Start-Process "$ScriptRoot\oa3\oa3tool.exe" -WorkingDirectory "$ScriptRoot\oa3" -ArgumentList "/Report /ConfigFile=""$ScriptRoot\oa3\OA3.cfg"" /NoKeyCheck" -Wait
 
-If (Test-Path $ScriptRoot\OA3.xml) 
+If (Test-Path $ScriptRoot\oa3\OA3.xml) 
 {
-
 	#Read Hash from generated XML File
-	[xml]$xmlhash = Get-Content -Path "$ScriptRoot\OA3.xml"
+	[xml]$xmlhash = Get-Content -Path "$ScriptRoot\oa3\OA3.xml"
 	$hash=$xmlhash.Key.HardwareHash
 
 	#Delete XML File
-	Remove-Item $ScriptRoot\OA3.xml
-
-    #Create CSV File
+	Remove-Item $ScriptRoot\oa3\OA3.xml
+ 
+ 	#Create CSV File
 
 	$computers = @()
 	$product=""
