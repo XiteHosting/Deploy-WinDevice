@@ -27,13 +27,13 @@ $AutopilotOption = Read-Host -Prompt "Publish Hash, Local CSV, Display, Skip"
 if ($AutopilotOption -eq 'Publish') {
   & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
   & "$Destination\Autopilot\Publish-Autopilot.ps1"
-  Remove-File "$Destination\Autopilot\AutopilotInfo.csv"
+  Remove-Item "$Destination\Autopilot\AutopilotInfo.csv"
 } elseif ($AutopilotOption -eq 'LocalCSV') {
   & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
   # Append to destination
-  Remove-File "$Destination\Autopilot\AutopilotInfo.csv"
+  Remove-Item "$Destination\Autopilot\AutopilotInfo.csv"
 } elseif ($AutopilotOption -eq 'Display') {
   & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
   Import-CSV "$Destination\Autopilot\AutopilotInfo.csv" | Format-List
-  Remove-File "$Destination\Autopilot\AutopilotInfo.csv"
+  Remove-Item "$Destination\Autopilot\AutopilotInfo.csv"
 }
