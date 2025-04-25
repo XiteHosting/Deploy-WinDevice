@@ -30,8 +30,8 @@ $AutopilotOption = 'Publish'
 # Local CSV: To Do
 
 if ($AutopilotOption -eq 'LocalCSV') {
-  & "$ArchiveOutput\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
+  & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
 } elseif ($AutopilotOption -eq 'Publish') {
-  & "$ArchiveOutput\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
-  & "$ArchiveOutput\Autopilot\Publish-Autopilotinfo.ps1"
+  & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
+  & "$Destination\Autopilot\Publish-Autopilotinfo.ps1"
 }
