@@ -9,16 +9,19 @@ Function Select-Option {
         [ValidateNotNullOrEmpty()]
         [Alias("field")] # Old Name
         [String]$returnField,
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [ValidateNotNullOrEmpty()]
-        [Boolean]$fieldUnique,
+        [Boolean]$fieldUnique = $true,
         [Parameter(Mandatory = $false)]
         [Array]$showFields,
         [Parameter(Mandatory = $false)]
         [String]$indexField,
         [Parameter(Mandatory = $false)]
-        [ValidateSet("all", "parent", "none")]
-        [String]$extraOption = "all"
+        [ValidateSet("all", "parent", "none", "default")]
+        [String]$extraOption = "all",
+        [Parameter(Mandatory = $false)]
+        [ValidateNotNullOrEmpty()]
+	[String]$defaultValue
     )
     Begin {
     }
@@ -43,8 +46,7 @@ Function Select-Option {
             } else {
                 $options | Select-Object -Property $indexField | Format-Table | Out-Host
             }
-        }
-        else {
+        } else {
             $options | Format-Table | Out-Host
         }
 
@@ -52,13 +54,16 @@ Function Select-Option {
             do {
                 $optionIndex = Read-Host "Choose $indexField (0 for all)"
             } until ( ($options.$indexField -contains $optionIndex) -or ($optionIndex -eq '0') )
-        }
-        elseif ($extraOption -eq "parent") {
+        } elseif ($extraOption -eq "parent") {
             do {
                 $optionIndex = Read-Host "Choose $indexField (0 for parent)"
             } until ( ($options.$indexField -contains $optionIndex) -or ($optionIndex -eq '0') )
-        }
-        else {
+        } elseif ( ($extraOption -eq "default") -and ("" -ne $defaultValue) ) {
+            $defaultValueString = ($options | Where-Object { $_.$returnField -eq $defaultValue }).$returnField
+            do {
+                $optionIndex = Read-Host "Choose $indexField (0 for $defaultValueString)"
+            } until ( ($options.$indexField -contains $optionIndex) -or ($optionIndex -eq '0') )	
+        } else {
             do {
                 $optionIndex = Read-Host "Choose $indexField"
             } until ($options.$indexField -contains $optionIndex)
@@ -67,12 +72,12 @@ Function Select-Option {
         if ($optionIndex -eq '0') {
             if ($extraOption -eq "all") {
                 $option = $options
-            }
-            elseif ($extraOption -eq "parent") {
+            } elseif ($extraOption -eq "parent") {
                 $option = @{$returnField = ".."}
+            } elseif ($extraOption -eq 'default') {
+		$option = $options | Where-Object { $_.$returnField -eq $defaultValue }
             }
-        }
-        else {
+        } else {
             $option = $options | Where-Object { $_.$indexField -eq $optionIndex }
         }
 
