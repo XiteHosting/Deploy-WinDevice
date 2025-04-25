@@ -14,7 +14,7 @@ $ArchiveOutput = "$($env:TEMP)\Deploy-WinDevice"
 Invoke-WebRequest -Uri $url -OutFile $DownloadOutput
 Expand-Archive -Path $DownloadOutput -DestinationPath $ArchiveOutput -Force
 Remove-Item $DownloadOutput
-Move-Item "$ArchiveOutput\Deploy-WinDevice-main\*" $ArchiveOutput
+Move-Item "$ArchiveOutput\Deploy-WinDevice-main\*" $ArchiveOutput -Force
 Remove-Item "$ArchiveOutput\Deploy-WinDevice-main"
 
 Write-Host "Autopilot"
