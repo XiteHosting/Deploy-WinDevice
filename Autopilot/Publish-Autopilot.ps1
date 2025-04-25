@@ -43,9 +43,6 @@ if (Test-Path "$($TenantInfoFile.FullName)") {
 
         Write-Host "Upload AutopilotInfo.csv"
         Import-AutoPilotCSV -csvFile "$ScriptRoot\AutopilotInfo.csv"
-
-    #    Write-Host "Publish AutopilotInfo.csv"
-    #    &$ScriptRoot\Get-WindowsAutopilotInfoWinPE.ps1 -Online -TenantId $TenantInfo.TenantId -AppId $TenantInfo.AppId -AppSecret $TenantInfo.AppSecret
     }
 } else {
     Write-Warning "File doesn't exist!"
