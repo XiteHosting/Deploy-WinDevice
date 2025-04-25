@@ -32,3 +32,5 @@ $AutopilotOption = 'Publish'
 if ($AutopilotOption -eq 'Publish') {
   & "$ArchiveOutput\Autopilot\Publish-Autopilotinfo.ps1"
 }
+
+# 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
