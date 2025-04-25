@@ -6,16 +6,21 @@ if ($psISE) {
 
 $url = "https://github.com/XiteHosting/Deploy-WinDevice/archive/refs/heads/main.zip"
 $DownloadOutput = "$($env:TEMP)\Deploy-WinDevice.zip"
-$ArchiveOutput = "$($env:TEMP)\Deploy-WinDevice"
+$BranchName = "Deploy-WinDevice-main"
+$ArchiveOutput = "$($env:TEMP)"
+$Destination = "$($env:TEMP)\Deploy-WinDevice"
 
+Remove-Item "$DownloadOutput"
+Remove-Item "$ArchiveOutput\$BranchName" -Recurse
+Remove-Item "$Destination" -Recurse
 
 #Import-Module BitsTransfer
 #Start-BitsTransfer -Source $url -Destination $DownloadOutput
 Invoke-WebRequest -Uri $url -OutFile $DownloadOutput
 Expand-Archive -Path $DownloadOutput -DestinationPath $ArchiveOutput -Force
 Remove-Item $DownloadOutput
-Move-Item "$ArchiveOutput\Deploy-WinDevice-main\*" $ArchiveOutput -Force
-Remove-Item "$ArchiveOutput\Deploy-WinDevice-main"
+Move-Item "$ArchiveOutput\$BranchName\*" $ArchiveOutput
+Remove-Item "$ArchiveOutput\$BranchName" -Force
 
 Write-Host "Autopilot"
 Write-Host "Options: Publish Hash, Local CSV, Skip"
