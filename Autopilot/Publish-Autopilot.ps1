@@ -14,7 +14,7 @@ if ($TenantInfoFiles.Name -contains ("TenantInfo_$($Shortname).7z")) {
     $TenantInfoFile = $TenantInfoFiles | Where-Object { $_.Name -eq "TenantInfo_$($Shortname).7z" }
 }
 
-if (Test-Path "$TenantInfoFile.FullName") {
+if (Test-Path "$($TenantInfoFile.FullName)") {
     Write-Host "Sync DateTime"
     $DateTime = Invoke-RestMethod "https://postman-echo.com/time/now"
     $datetimeFormatted = [datetime]::Parse($datetime)
