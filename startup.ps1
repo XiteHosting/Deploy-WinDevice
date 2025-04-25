@@ -23,16 +23,20 @@ Move-Item "$ArchiveOutput\$BranchName" $Destination
 Remove-Item "$ArchiveOutput\$BranchName" -Force
 
 Write-Host "Autopilot"
-Write-Host "Options: Publish Hash, Local CSV, Skip"
+Write-Host "Options: Publish Hash, Local CSV, Display, Skip"
 $AutopilotOption = 'Publish'
 
 
 # Local CSV: To Do
 
-if ($AutopilotOption -eq 'LocalCSV') {
-  & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
-  # Append to destination
-} elseif ($AutopilotOption -eq 'Publish') {
+if ($AutopilotOption -eq 'Publish') {
   & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
   & "$Destination\Autopilot\Publish-Autopilot.ps1"
+} elseif ($AutopilotOption -eq 'LocalCSV') {
+  & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
+  # Append to destination
+} elseif ($AutopilotOption -eq 'Display') {
+  & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
+  Import-CSV "$Destination\Autopilot\AutopilotInfo.csv" | Format-List
+  Remove-File "$Destination\Autopilot\AutopilotInfo.csv"
 }
