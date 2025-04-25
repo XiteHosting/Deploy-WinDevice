@@ -79,6 +79,7 @@ if ($ClearDiskConfirm -eq 'y') {
 }
 
 # TODO: Clear disk manually?
+Get-Partition.fixed
 
 if ($AutopilotOption -eq 'Publish') {
   & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
