@@ -9,11 +9,12 @@ $DownloadOutput = "$($env:TEMP)\Deploy-WinDevice.zip"
 $ArchiveOutput = "$($env:TEMP)\Deploy-WinDevice"
 
 
-Import-Module BitsTransfer
-Start-BitsTransfer -Source $url -Destination $DownloadOutput
+#Import-Module BitsTransfer
+#Start-BitsTransfer -Source $url -Destination $DownloadOutput
+Invoke-WebRequest -Uri $url -OutFile $DownloadOutput
 Expand-Archive -Path $DownloadOutput -DestinationPath $ArchiveOutput
 Remove-Item $DownloadOutput
-Move-Item "$ArchiveOutput\Deploy-WinDevice-main\*" $ArchiveOutput -Recursive
+Move-Item "$ArchiveOutput\Deploy-WinDevice-main\*" $ArchiveOutput
 Remove-Item "$ArchiveOutput\Deploy-WinDevice-main"
 
 Write-Host "Autopilot"
