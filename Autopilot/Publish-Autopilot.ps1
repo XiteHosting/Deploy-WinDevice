@@ -17,7 +17,7 @@ if (Test-Path "$ScriptRoot\TenantInfo_$($ShortName).7z") {
 
     Write-Host "Extract encrypted 7z file"
     $Arguments = 'x -aoa "{0}" -o"{1}" -p"{2}"' -f "$ScriptRoot\TenantInfo_$($ShortName).7z", "$ScriptRoot", (New-Object PSCredential 0, (Read-Host -Prompt "7z Encryption Password" -AsSecureString)).GetNetworkCredential().Password
-    $7za = Start-Process "$ScriptRoot\7za.exe" -ArgumentList $Arguments -Wait -PassThru
+    $7za = Start-Process "$ScriptRoot\7z\7za.exe" -ArgumentList $Arguments -Wait -PassThru
     if ($7za.ExitCode -ne 0) {
         Write-Warning "7za exit code <> 0 ($($7za.ExitCode))"
     } elseif (-not (Test-Path "$ScriptRoot\TenantInfo.json")) {
