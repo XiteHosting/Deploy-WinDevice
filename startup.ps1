@@ -25,9 +25,7 @@ Write-Host "Autopilot"
 $AutopilotOption = Read-Host -Prompt "Publish, LocalCSV, Display, Skip"
 
 if ($AutopilotOption -eq 'Publish') {
-  & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
-  & "$Destination\Autopilot\Publish-Autopilot.ps1"
-  Remove-Item "$Destination\Autopilot\AutopilotInfo.csv"
+  Write-Host "Do publish later"
 } elseif ($AutopilotOption -eq 'LocalCSV') {
   # TODO: Change to drive selection
   $Drive = "$((Get-Volume -FileSystemlabel "OSDCloudUSB").DriveLetter):"
@@ -47,27 +45,46 @@ if ($AutopilotOption -eq 'Publish') {
 }
 
 $OSVersion = 'Windows 11'
+$OSActivation = 'Retail'
 
-$OSEdition = Read-Host -Prompt "Pro, Home, Education"
+if ($AutopilotOption -ne 'Skip') {
+  $OSEdition = Read-Host -Prompt "Pro, Education"
+} else {
+  $OSEdition = Read-Host -Prompt "Pro, Home, Education"
+}
 
 $OSLanguage = Read-Host -Prompt "nl-nl, en-us, fr-fr, de-de"
 
-$OSBuild = Read-Host "Use latest build? (Y/n)
+$OSBuild = Read-Host -Prompt "Use latest build? (Y/n)"
 if ($OSBuild -eq 'y') {
-  $ReleaseId = Get-OSDCatalogOperationgSystems | Where-Object { ($_.OperatingSystem -eq $OSVersion) -and ($_.License -eq $OSActivation) -and ($_.LanguageCode -eq $OSLanguage) } | Select-Object -Property ReleaseId -Unique
+  $ReleaseId = Get-OSDCatalogOperatingSystems | Where-Object { ($_.OperatingSystem -eq $OSVersion) -and ($_.License -eq $OSActivation) -and ($_.LanguageCode -eq $OSLanguage) } | Select-Object -Property ReleaseId -Unique
   # TO DO: Get latest ReleaseId more intelligently (Split on H, highest first, highest last)
-  $OSBuild = $ReleaseId[0]
+  $OSBuild = $ReleaseId[0].ReleaseId
 }
 
-$WindowsUpdate = Read-Host "Run Windows Update before OOBE? (Y/n)"
+$WindowsUpdate = Read-Host -Prompt "Run Windows Update before OOBE? (Y/n)"
 if ($WindowsUpdate -eq 'y') {
   $WindowsUpdate = $true
 } else {
   $WindowsUpdate = $false
+}
+
+$ClearDiskConfirm = Read-Host -Prompt "Manually confirm ClearDisk? Necessary if you have multiple drives ! (Y/n)"
+if ($ClearDiskConfirm -eq 'y') {
+  $ClearDiskConfirm = $true
+} else {
+  $ClearDiskConfirm = $false
+}
+
+if ($AutopilotOption -eq 'Publish') {
+  & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
+  & "$Destination\Autopilot\Publish-Autopilot.ps1"
+  Remove-Item "$Destination\Autopilot\AutopilotInfo.csv"
+}
 
 $Global:MyOSDCloud = [ordered]@{
   OEMActivation = [bool]$true
-  ClearDiskConfirm = [bool]$true # Indien meerdere drives, anders geen keuze
+  ClearDiskConfirm = [bool]$ClearDiskConfirm
   Restart = [bool]$true
   RecoveryPartition = [bool]$true
   WindowsUpdate = [bool]$WindowsUpdate
@@ -75,4 +92,4 @@ $Global:MyOSDCloud = [ordered]@{
   SyncMSUpCatDriverUSB = [bool]$true
 }
 
-Start-OSDCloud -OSVersion $OSVersion -OSEdition $OSEdition -OSLanguage $OSLanguage -OSBuild $OSBuild -Firmware -SkipAutopilot -SkipODT
+Start-OSDCloud -OSVersion $OSVersion -OSEdition $OSEdition -OSLanguage $OSLanguage -OSBuild $OSBuild -OSActivation $OSActivation -Firmware -SkipAutopilot -SkipODT
