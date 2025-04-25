@@ -33,7 +33,9 @@ if ($AutopilotOption -eq 'Publish') {
   $Drive = "$((Get-Volume -FileSystemlabel "OSDCloudUSB").DriveLetter):"
   & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
   if (Test-Path "$($Drive)\AutopilotInfo.csv") {
-    Import-CSV "$Destination\Autopilot\AutopilotInfo.csv" | Export-CSV "$($Drive)\AutopilotInfo.csv" -Append
+    $AutopilotInfo = Import-CSV "$($Drive)\AutopilotInfo.csv"
+    $AutopilotInfo += Import-CSV "$Destination\Autopilot\AutopilotInfo.csv"
+    $AutopilotInfo | Select-Object "Device Serial Number", "Windows Product ID", "Hardware Hash", "Group Tag" | ConvertTo-CSV -NoTypeInformation | ForEach-Object {$_ -replace '"',''} | Out-File "$($Drive)\AutopilotInfo.csv"
   } else {
     Copy-Item "$Destination\Autopilot\AutopilotInfo.csv" "$($Drive)\AutopilotInfo.csv"
   }
