@@ -1,7 +1,7 @@
 if ($psISE) {
     $ScriptRoot = Split-Path -Path $psISE.CurrentFile.FullPath        
 } else {
-    $ScriptRoot = $PSScriptRoot
+    $ScriptRoot = $PSScriptRoot
 }
 
 $serial = (Get-WmiObject -Class Win32_BIOS).SerialNumber
