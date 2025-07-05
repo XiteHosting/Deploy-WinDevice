@@ -1,7 +1,7 @@
 if ($psISE) {
-    $ScriptRoot = Split-Path -Path $psISE.CurrentFile.FullPath
+    $ScriptRoot = Split-Path -Path $psISE.CurrentFile.FullPath
 } else {
-    $ScriptRoot = $PSScriptRoot
+    $ScriptRoot = $PSScriptRoot
 }
 
 $url = "https://github.com/XiteHosting/Deploy-WinDevice/archive/refs/heads/main.zip"
