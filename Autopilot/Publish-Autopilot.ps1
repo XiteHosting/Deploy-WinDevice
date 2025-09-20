@@ -14,8 +14,8 @@ if (Test-Path "X:\OSDCloud\Config\Scripts\AutopilotTenantInfo") {
 
 $OSDCloudUSBDrive = $((Get-Volume | Where-Object { $_.FileSystemLabel -eq 'OSDCloudUSB' }).DriveLetter)
 
-if (Test-Path "$($OSDCloudUSBDrive):\OSDCloud\AutopiloTenantInfo") {
-	$TenantInfoFiles += Get-ChildItem "$($OSDCloudUSBDrive):\OSDCloud\AutopiloTenantInfo\TenantInfo_*.7z"
+if (Test-Path "$($OSDCloudUSBDrive):\OSDCloud\AutopilotTenantInfo") {
+	$TenantInfoFiles += Get-ChildItem "$($OSDCloudUSBDrive):\OSDCloud\AutopilotTenantInfo\TenantInfo_*.7z"
 }
 
 if ($TenantInfoFiles.Name -contains ("TenantInfo_$($Shortname).7z")) {
