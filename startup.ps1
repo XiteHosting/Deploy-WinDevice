@@ -32,6 +32,7 @@ $AutopilotOptions = @(
   [PSCustomObject]@{Return = "Publish"; Action = "Publish Autopilot Info to Tenant"}
   [PSCustomObject]@{Return = "LocalCSV"; Action = "Create AutopilotInfo.csv on USB stick"}
   [PSCustomObject]@{Return = "Display"; Action = "Display Autopilot Info"}
+  [PSCustomObject]@{Return = "PublishOnly"; Action = "Publish Autopilot Info to Tenant (Without imaging device)"}
   [PSCustomObject]@{Return = "Skip"; Action = "Skip"}
 )
 $AutopilotOption = Select-Option -list $AutopilotOptions -returnField Return -showFields Action -extraOption Default -defaultValue "Publish"
@@ -39,6 +40,26 @@ $AutopilotOption = Select-Option -list $AutopilotOptions -returnField Return -sh
 if ($AutopilotOption -eq 'Publish') {
   # TODO: Open 7z file
   Write-Host "### Run publish later so all user actions are together"
+} elseif ($AutopilotOption -eq 'PublishOnly') {
+  & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
+  & "$Destination\Autopilot\Publish-Autopilot.ps1"
+  Remove-Item "$Destination\Autopilot\AutopilotInfo.csv"
+
+  $ShutdownRebootOptions = @(
+    [PSCustomObject]@{Return = "Shutdown"; Action = "Shutdown"}
+    [PSCustomObject]@{Return = "Reboot"; Action = "Reboot"}
+	[PSCustomObject]@{Return = "Exit"; Action = "Exit"}
+  )
+  
+  $ShutdownRebootOption = Select-Option -list $ShutdownRebootOptions -returnField Return -showFields Action -extraOption Default -defaultValue "Shutdown"
+  
+  if ($ShutdownRebootOption -eq 'Shutdown') {
+    Stop-Computer -Force
+  } elseif ($ShutdownRebootOption -eq 'Reboot') {
+    Restart-Computer -Force
+  } elseif ($ShutdownRebootOption -eq 'Exit') {
+    Exit 0
+  }
 } elseif ($AutopilotOption -eq 'LocalCSV') {
   # TODO: Change to drive selection
   $Drive = "$((Get-Volume -FileSystemlabel "OSDCloudUSB").DriveLetter):"
