@@ -1,5 +1,5 @@
 if ($psISE) {
-    $ScriptRoot = Split-Path -Path $psISE.CurrentFile.FullPath        
+    $ScriptRoot = Split-Path -Path $psISE.CurrentFile.FullPath
 } else {
     $ScriptRoot = $PSScriptRoot
 }

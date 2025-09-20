@@ -1,5 +1,5 @@
 if ($psISE) {
-    $ScriptRoot = Split-Path -Path $psISE.CurrentFile.FullPath
+    $ScriptRoot = Split-Path -Path $psISE.CurrentFile.FullPath
 } else {
     $ScriptRoot = $PSScriptRoot
 }
@@ -7,8 +7,16 @@ if ($psISE) {
 $ShortName = Read-Host "Client Short name"
 
 $TenantInfoFiles = @()
-$TenantInfoFiles += Get-ChildItem "X:\OSDCloud\Config\Scripts\Autopilot\TenantInfo_*.7z"
-#$TenantInfoFiles += Get-ChildItem "$((Get-Volume | Where-Object { $_.FileSystemLabel -eq 'OSDCloudUSB' }).DriveLetter):\
+
+if (Test-Path "X:\OSDCloud\Config\Scripts\AutopilotTenantInfo") {
+	$TenantInfoFiles += Get-ChildItem "X:\OSDCloud\Config\Scripts\AutopilotTenantInfo\TenantInfo_*.7z"
+}
+
+$OSDCloudUSBDrive = $((Get-Volume | Where-Object { $_.FileSystemLabel -eq 'OSDCloudUSB' }).DriveLetter)
+
+if (Test-Path "$($OSDCloudUSBDrive):\OSDCloud\AutopiloTenantInfo") {
+	$TenantInfoFiles += Get-ChildItem "$($OSDCloudUSBDrive):\OSDCloud\AutopiloTenantInfo\TenantInfo_*.7z"
+}
 
 if ($TenantInfoFiles.Name -contains ("TenantInfo_$($Shortname).7z")) {
     $TenantInfoFile = $TenantInfoFiles | Where-Object { $_.Name -eq "TenantInfo_$($Shortname).7z" }
@@ -47,5 +55,3 @@ if (Test-Path "$($TenantInfoFile.FullName)") {
 } else {
     Write-Warning "File doesn't exist!"
 }
-
-# Start-OSDCloud -OSName $OSName -OSEdition $OSEdition -OSActivation $OSActivation -OSLanguage $OSLanguage
