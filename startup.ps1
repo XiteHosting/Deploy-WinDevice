@@ -37,9 +37,11 @@ $AutopilotOptions = @(
 )	
 $AutopilotOption = Select-Option -list $AutopilotOptions -returnField Return -showFields Action -extraOption Default -defaultValue "Publish"
 
-if ( ($AutopilotOption -eq 'Publish') -or ($AutoPilotOption -eq 'PublishAssigned') ) {
+if ($AutopilotOption -eq 'Publish') {
+  Write-Host "### Run publish later so all user actions are together"
+} elseif ($AutoPilotOption -eq 'PublishAssigned') {
   $AssignedUser = Read-Host "UPN to assign (No input check !)"
-	
+
   Write-Host "### Run publish later so all user actions are together"
 } elseif ($AutopilotOption -eq 'PublishOnly') {
   & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
