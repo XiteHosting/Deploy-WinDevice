@@ -25,14 +25,13 @@ Move-Item "$ArchiveOutput\$BranchName" $Destination
 . "$Destination\Functions\Select-Option.ps1"
 . "$Destination\Functions\Ask-Confirmation.ps1"
 
-Write-Host "`n### You may remove USB Stick if you don't need the locally stored images"
-
 Write-Host "`n### Choose Autopilot action"
 $AutopilotOptions = @(
-  [PSCustomObject]@{Return = "Publish"; Action = "Publish Autopilot Info to Tenant"}
+  [PSCustomObject]@{Return = "Publish"; Action = "Publish Autopilot to Tenant (then start imaging device"}
+  [PSCustomObject]@{Return = "PublishOnly"; Action = "Publish Autopilot to Tenant (without imaging device)"}
   [PSCustomObject]@{Return = "LocalCSV"; Action = "Create AutopilotInfo.csv on USB stick"}
   [PSCustomObject]@{Return = "Display"; Action = "Display Autopilot Info"}
-  [PSCustomObject]@{Return = "PublishOnly"; Action = "Publish Autopilot Info to Tenant (Without imaging device)"}
+  
   [PSCustomObject]@{Return = "Skip"; Action = "Skip"}
 )
 $AutopilotOption = Select-Option -list $AutopilotOptions -returnField Return -showFields Action -extraOption Default -defaultValue "Publish"
@@ -45,19 +44,19 @@ if ($AutopilotOption -eq 'Publish') {
   & "$Destination\Autopilot\Publish-Autopilot.ps1"
   Remove-Item "$Destination\Autopilot\AutopilotInfo.csv"
 
-  $ShutdownRebootOptions = @(
+  $NextActions = @(
     [PSCustomObject]@{Return = "Shutdown"; Action = "Shutdown"}
     [PSCustomObject]@{Return = "Reboot"; Action = "Reboot"}
 	[PSCustomObject]@{Return = "Exit"; Action = "Exit"}
   )
   
-  $ShutdownRebootOption = Select-Option -list $ShutdownRebootOptions -returnField Return -showFields Action -extraOption Default -defaultValue "Shutdown"
+  $NextAction = Select-Option -list $NextActions -returnField Return -showFields Action -extraOption Default -defaultValue "Shutdown"
   
-  if ($ShutdownRebootOption -eq 'Shutdown') {
+  if ($NextAction -eq 'Shutdown') {
     Stop-Computer -Force
-  } elseif ($ShutdownRebootOption -eq 'Reboot') {
+  } elseif ($NextAction -eq 'Reboot') {
     Restart-Computer -Force
-  } elseif ($ShutdownRebootOption -eq 'Exit') {
+  } elseif ($NextAction -eq 'Exit') {
     Exit 0
   }
 } elseif ($AutopilotOption -eq 'LocalCSV') {
@@ -72,10 +71,45 @@ if ($AutopilotOption -eq 'Publish') {
     Copy-Item "$Destination\Autopilot\AutopilotInfo.csv" "$($Drive)\AutopilotInfo.csv"
   }
   Remove-Item "$Destination\Autopilot\AutopilotInfo.csv"
+  
+  $NextActions = @(
+    [PSCustomObject]@{Return = "Shutdown"; Action = "Shutdown"}
+    [PSCustomObject]@{Return = "Reboot"; Action = "Reboot"}
+	[PSCustomObject]@{Return = "Continue"; Action = "Continue imaging device"}
+	[PSCustomObject]@{Return = "Exit"; Action = "Exit"}
+  )
+  
+  $NextAction = Select-Option -list $NextActions -returnField Return -showFields Action -extraOption Default -defaultValue "Continue"
+  
+  if ($NextAction -eq 'Shutdown') {
+    Stop-Computer -Force
+  } elseif ($NextAction -eq 'Reboot') {
+    Restart-Computer -Force
+  } elseif ($NextAction -eq 'Exit') {
+    Exit 0
+  }
+  
 } elseif ($AutopilotOption -eq 'Display') {
   & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
   Import-CSV "$Destination\Autopilot\AutopilotInfo.csv" | Format-List
   Remove-Item "$Destination\Autopilot\AutopilotInfo.csv"
+  
+  $NextActions = @(
+    [PSCustomObject]@{Return = "Shutdown"; Action = "Shutdown"}
+    [PSCustomObject]@{Return = "Reboot"; Action = "Reboot"}
+	[PSCustomObject]@{Return = "Continue"; Action = "Continue imaging device"}
+	[PSCustomObject]@{Return = "Exit"; Action = "Exit"}
+  )
+  
+  $NextAction = Select-Option -list $NextActions -returnField Return -showFields Action -extraOption Default -defaultValue "Continue"
+  
+  if ($NextAction -eq 'Shutdown') {
+    Stop-Computer -Force
+  } elseif ($NextAction -eq 'Reboot') {
+    Restart-Computer -Force
+  } elseif ($NextAction -eq 'Exit') {
+    Exit 0
+  }
 }
 
 $OSVersion = 'Windows 11'
@@ -153,6 +187,10 @@ Write-Host "WindowsUpdate:    $WindowsUpdate"
 Write-Host "ClearDiskConfirm: $ClearDiskConfirm"
 Write-Host "#################################"
 Write-Host "`n"
+
+Write-Host "`n### You may remove USB Stick if you don't need the locally stored images"
+Write-Host "`n### Or you can remove USB Stick when the device is rebooting"
+
 
 $Continue = Ask-Confirmation -Message "Correct" -HideCancel
 
