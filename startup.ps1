@@ -27,12 +27,11 @@ Move-Item "$ArchiveOutput\$BranchName" $Destination
 
 Write-Host "`n### Choose Autopilot action"
 $AutopilotOptions = @(
-  [PSCustomObject]@{Return = "Publish"; Action = "Publish Autopilot to Tenant (then start imaging device"}
-  [PSCustomObject]@{Return = "PublishOnly"; Action = "Publish Autopilot to Tenant (without imaging device)"}
+  [PSCustomObject]@{Return = "Publish"; Action = "Publish Autopilot Id to Tenant (then start imaging device"}
+  [PSCustomObject]@{Return = "PublishOnly"; Action = "Publish Autopilot Id to Tenant (without imaging device)"}
   [PSCustomObject]@{Return = "LocalCSV"; Action = "Create AutopilotInfo.csv on USB stick"}
   [PSCustomObject]@{Return = "Display"; Action = "Display Autopilot Info"}
-  
-  [PSCustomObject]@{Return = "Skip"; Action = "Skip"}
+  [PSCustomObject]@{Return = "Skip"; Action = "Skip Autopilot"}
 )
 $AutopilotOption = Select-Option -list $AutopilotOptions -returnField Return -showFields Action -extraOption Default -defaultValue "Publish"
 
