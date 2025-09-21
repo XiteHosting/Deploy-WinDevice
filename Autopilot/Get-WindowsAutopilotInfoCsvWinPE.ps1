@@ -1,3 +1,10 @@
+[CmdletBinding()]
+Param (
+  # Param1 help description
+  [Parameter(Mandatory=$false)]
+  $User = "none"
+)
+
 if ($psISE) {
     $ScriptRoot = Split-Path -Path $psISE.CurrentFile.FullPath
 } else {
@@ -33,7 +40,17 @@ If (Test-Path $ScriptRoot\oa3\OA3.xml)
 		"Hardware Hash" = $hash
 		"Group Tag" = $GroupTag
 	}
+
+    if ($User -ne "none") {
+        Write-Host "Adding Assigned User: $User"
+        $c | Add-Member -NotePropertyName "Assigned User" -NotePropertyValue $User
+    }
 	
  	$computers += $c
-	$computers | Select "Device Serial Number", "Windows Product ID", "Hardware Hash", "Group Tag" | ConvertTo-CSV -NoTypeInformation | % {$_ -replace '"',''} | Out-File "$ScriptRoot\AutopilotInfo.csv"
+
+    if ($user -ne "none") {
+    	$computers | Select "Device Serial Number", "Windows Product ID", "Hardware Hash", "Group Tag", "Assigned User" | ConvertTo-CSV -NoTypeInformation | % {$_ -replace '"',''} | Out-File "$ScriptRoot\AutopilotInfo.csv"
+    } else {
+        $computers | Select "Device Serial Number", "Windows Product ID", "Hardware Hash", "Group Tag" | ConvertTo-CSV -NoTypeInformation | % {$_ -replace '"',''} | Out-File "$ScriptRoot\AutopilotInfo.csv"
+    }
 }
