@@ -27,13 +27,13 @@ Move-Item "$ArchiveOutput\$BranchName" $Destination
 
 Write-Host "`n### Choose Autopilot action"
 $AutopilotOptions = @(
-  [PSCustomObject]@{Return = "Publish"; Action = "Publish Autopilot Id to Tenant (then start imaging device"}
-  [PSCustomObject]@{Return = "PublishAssigned"; Action = "Publish Autopilot Id with Assigned User to Tenant (then start imaging device"}
+  [PSCustomObject]@{Return = "Publish"; Action = "Publish Autopilot Id to Tenant"}
+  [PSCustomObject]@{Return = "PublishAssigned"; Action = "Publish Autopilot Id with Assigned User to Tenant"}
   [PSCustomObject]@{Return = "PublishOnly"; Action = "Publish Autopilot Id to Tenant (without imaging device)"}
-  [PSCustomObject]@{Return = "PublishAssignedOnly"; Action = "Publish Autopilot Id with Assigned User to Tenant (without imaging device"}
-  [PSCustomObject]@{Return = "LocalCSV"; Action = "Create AutopilotInfo.csv on USB stick"}
-  [PSCustomObject]@{Return = "Display"; Action = "Display Autopilot Info"}
-  [PSCustomObject]@{Return = "Skip"; Action = "Skip Autopilot"}
+  [PSCustomObject]@{Return = "PublishAssignedOnly"; Action = "Publish Autopilot Id with Assigned User to Tenant (without imaging device)"}
+  [PSCustomObject]@{Return = "LocalCSV"; Action = "Create AutopilotInfo.csv on USB stick (without imaging device)"}
+  [PSCustomObject]@{Return = "Display"; Action = "Display Autopilot Info (without imaging device)"}
+  [PSCustomObject]@{Return = "Skip"; Action = "Skip Autopilot (start imaging device)"}
 )	
 $AutopilotOption = Select-Option -list $AutopilotOptions -returnField Return -showFields Action -extraOption Default -defaultValue "Publish"
 
