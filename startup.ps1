@@ -201,6 +201,8 @@ if ($ClearDiskConfirm -eq 'y') {
   $ClearDiskConfirm = $false
 }
 
+Clear-Host
+
 Write-Host "`n"
 Write-Host "#################################"
 Write-Host "            Summary"
@@ -225,6 +227,7 @@ Write-Host "### Or you can remove the USB Stick after imaging when the device is
 Write-Host "`n"
 
 $Continue = Ask-Confirmation -Message "Correct" -HideCancel
+Write-Host "`n"
 
 if ($Continue -eq 'y') {
   if ($AutopilotOption -eq 'Publish') {
