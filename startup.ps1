@@ -28,15 +28,18 @@ Move-Item "$ArchiveOutput\$BranchName" $Destination
 Write-Host "`n### Choose Autopilot action"
 $AutopilotOptions = @(
   [PSCustomObject]@{Return = "Publish"; Action = "Publish Autopilot Id to Tenant (then start imaging device"}
+  [PSCustomObject]@{Return = "PublishAssigned"; Action = "Publish Autopilot Id with Assigned User to Tenant (then start imaging device"}
   [PSCustomObject]@{Return = "PublishOnly"; Action = "Publish Autopilot Id to Tenant (without imaging device)"}
+  [PSCustomObject]@{Return = "PublishAssignedOnly"; Action = "Publish Autopilot Id with Assigned User to Tenant (without imaging device"}
   [PSCustomObject]@{Return = "LocalCSV"; Action = "Create AutopilotInfo.csv on USB stick"}
   [PSCustomObject]@{Return = "Display"; Action = "Display Autopilot Info"}
   [PSCustomObject]@{Return = "Skip"; Action = "Skip Autopilot"}
 )	
 $AutopilotOption = Select-Option -list $AutopilotOptions -returnField Return -showFields Action -extraOption Default -defaultValue "Publish"
 
-if ($AutopilotOption -eq 'Publish') {
-  # TODO: Open 7z file
+if ( ($AutopilotOption -eq 'Publish') -or ($AutoPilotOption -eq 'PublishAssigned') ) {
+  $AssignedUser = Read-Host "UPN to assign (No input check !)"
+	
   Write-Host "### Run publish later so all user actions are together"
 } elseif ($AutopilotOption -eq 'PublishOnly') {
   & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
@@ -58,6 +61,30 @@ if ($AutopilotOption -eq 'Publish') {
   } elseif ($NextAction -eq 'Exit') {
     Exit 0
   }
+} elseif ($AutoPilotOption -eq 'PublishAssignedOnly') {
+  
+  $AssignedUser = Read-Host "UPN to assign (No input check !)"
+  
+  & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1" -User $AssignedUser
+  & "$Destination\Autopilot\Publish-Autopilot.ps1"
+  Remove-Item "$Destination\Autopilot\AutopilotInfo.csv"
+
+  $NextActions = @(
+    [PSCustomObject]@{Return = "Shutdown"; Action = "Shutdown"}
+    [PSCustomObject]@{Return = "Reboot"; Action = "Reboot"}
+	[PSCustomObject]@{Return = "Exit"; Action = "Exit"}
+  )
+  
+  $NextAction = Select-Option -list $NextActions -returnField Return -showFields Action -extraOption Default -defaultValue "Shutdown"
+  
+  if ($NextAction -eq 'Shutdown') {
+    Stop-Computer -Force
+  } elseif ($NextAction -eq 'Reboot') {
+    Restart-Computer -Force
+  } elseif ($NextAction -eq 'Exit') {
+    Exit 0
+  }
+  
 } elseif ($AutopilotOption -eq 'LocalCSV') {
   # TODO: Change to drive selection
   $Drive = "$((Get-Volume -FileSystemlabel "OSDCloudUSB").DriveLetter):"
@@ -176,6 +203,9 @@ Write-Host "`n"
 Write-Host "#################################"
 Write-Host "            Summary"
 Write-Host "Autopilot:        $AutopilotOption"
+if ($null -ne $AssignedUser) {
+Write-Host "Assigned User:    $AssignedUser"	
+}
 Write-Host "OSVersion:        $OSVersion"
 Write-Host "OSActivation:     $OSActivation"
 Write-Host "OSEdition:        $OSEdition"
@@ -196,7 +226,11 @@ $Continue = Ask-Confirmation -Message "Correct" -HideCancel
 
 if ($Continue -eq 'y') {
   if ($AutopilotOption -eq 'Publish') {
-    & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
+    if ($null -ne $AssignedUser) {
+      & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1" -User $AssignedUser
+    } else {
+      & "$Destination\Autopilot\Get-WindowsAutopilotInfoCsvWinPE.ps1"
+    }
     & "$Destination\Autopilot\Publish-Autopilot.ps1"
     Remove-Item "$Destination\Autopilot\AutopilotInfo.csv"
   }
