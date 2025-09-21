@@ -32,7 +32,7 @@ $AutopilotOptions = @(
   [PSCustomObject]@{Return = "LocalCSV"; Action = "Create AutopilotInfo.csv on USB stick"}
   [PSCustomObject]@{Return = "Display"; Action = "Display Autopilot Info"}
   [PSCustomObject]@{Return = "Skip"; Action = "Skip Autopilot"}
-)
+)	
 $AutopilotOption = Select-Option -list $AutopilotOptions -returnField Return -showFields Action -extraOption Default -defaultValue "Publish"
 
 if ($AutopilotOption -eq 'Publish') {
@@ -187,9 +187,10 @@ Write-Host "ClearDiskConfirm: $ClearDiskConfirm"
 Write-Host "#################################"
 Write-Host "`n"
 
-Write-Host "`n### You may remove USB Stick if you don't need the locally stored images"
-Write-Host "`n### Or you can remove USB Stick when the device is rebooting"
-
+Write-Host "`n"
+Write-Host "### You may remove the USB Stick if you don't need the locally stored images"
+Write-Host "### Or you can remove the USB Stick after imaging when the device is rebooting"
+Write-Host "`n"
 
 $Continue = Ask-Confirmation -Message "Correct" -HideCancel
 
